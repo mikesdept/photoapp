@@ -3,6 +3,7 @@ package mikes.dept.photoapp.di
 import android.content.Context
 import dagger.BindsInstance
 import dagger.Component
+import mikes.dept.presentation.ui.main.MainSubcomponent
 import javax.inject.Singleton
 
 @Singleton
@@ -18,5 +19,7 @@ interface AppComponent {
         fun build(): AppComponent
 
     }
+
+    fun mainSubcomponentBuilder(): MainSubcomponent.Builder
 
 }
