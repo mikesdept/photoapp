@@ -9,8 +9,11 @@ kotlinxSerializationJson = "1.6.3"
 dagger = "2.51"
 room = "2.6.1"
 appcompat = "1.7.0"
+javaxInject = "1"
+kotlinCoroutines = "1.8.1"
 
 ksp = "1.9.0-1.0.13"
+jetbrainsKotlinJvm = "1.9.0"
 
 [libraries]
 converter-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "converterGson" }
@@ -23,8 +26,11 @@ dagger-compiler = { module = "com.google.dagger:dagger-compiler", version.ref = 
 androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
 androidx-room = { module = "androidx.room:room-ktx", version.ref = "room" }
 androidx-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "appcompat" }
+javax-inject = { module = "javax.inject:javax.inject", version.ref = "javaxInject" }
+kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "kotlinCoroutines" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+jetbrains-kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "jetbrainsKotlinJvm" }

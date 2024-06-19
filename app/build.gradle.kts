@@ -49,7 +49,7 @@ android {
 
 dependencies {
     // TODO: add modules
-//    implementation(projects.domain)
+    implementation(projects.domain)
 //    implementation(projects.data)
 //    implementation(projects.presentation)
 

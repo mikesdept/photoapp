@@ -21,4 +21,6 @@ dependencyResolutionManagement {
 
 rootProject.name = "photoapp"
 include(":app")
- 
+include(":domain")
+
+enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
