@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/photoListFragment"
-        android:name="">
+        android:name="mikes.dept.presentation.ui.photolist.PhotoListFragment">
 
         <action
             android:id="@+id/navPhotoCreateFragment"
@@ -17,6 +17,6 @@
 
     <fragment
         android:id="@+id/photoCreateFragment"
-        android:name=""/>
+        android:name="mikes.dept.presentation.ui.photocreate.PhotoCreateFragment"/>
 
 </navigation>
