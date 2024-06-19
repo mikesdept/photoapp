@@ -4,6 +4,7 @@ import android.content.Context
 import dagger.BindsInstance
 import dagger.Component
 import mikes.dept.presentation.ui.main.MainSubcomponent
+import mikes.dept.presentation.ui.photocreate.PhotoCreateSubcomponent
 import mikes.dept.presentation.ui.photolist.PhotoListSubcomponent
 import javax.inject.Singleton
 
@@ -24,5 +25,7 @@ interface AppComponent {
     fun mainSubcomponentBuilder(): MainSubcomponent.Builder
 
     fun photoListSubcomponentBuilder(): PhotoListSubcomponent.Builder
+
+    fun photoCreateSubcomponentBuilder(): PhotoCreateSubcomponent.Builder
 
 }
