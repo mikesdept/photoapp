@@ -23,5 +23,6 @@ rootProject.name = "photoapp"
 include(":app")
 include(":domain")
 include(":data")
+include(":presentation")
 
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")

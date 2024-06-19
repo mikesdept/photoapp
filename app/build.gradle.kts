@@ -48,10 +48,9 @@ android {
 }
 
 dependencies {
-    // TODO: add modules
     implementation(projects.domain)
     implementation(projects.data)
-//    implementation(projects.presentation)
+    implementation(projects.presentation)
 
     // Network
     implementation(libs.converter.gson)
