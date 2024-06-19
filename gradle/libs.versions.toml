@@ -15,9 +15,9 @@ composeBom = "2024.06.00"
 activityCompose = "1.9.0"
 
 agp = "8.4.0"
-kotlin = "1.9.0"
-ksp = "1.9.0-1.0.13"
-jetbrainsKotlinJvm = "1.9.0"
+kotlin = "1.9.24"
+ksp = "1.9.24-1.0.20"
+jetbrainsKotlinJvm = "1.9.24"
 navigation = "2.7.7"
 kotlinCompilerExtensionVersion = "1.5.14"
 
