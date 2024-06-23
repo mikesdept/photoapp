@@ -40,6 +40,13 @@ class PhotoCreateFragment : BaseComposeFragment<PhotoCreateViewModel>() {
 
     override fun setup() {}
 
+    // TODO: image picker
+    // TODO: background picker
+    // TODO: text color picker
+    // TODO: text change
+    // TODO: save to local storage
+    // TODO: open existing image from list and edit at this screen
+    // TODO: animation transition between screens
     @Composable
     private fun ComposeContentView(viewModel: PhotoCreateViewModel) {
         Box(
