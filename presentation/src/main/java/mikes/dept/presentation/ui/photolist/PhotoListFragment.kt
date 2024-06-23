@@ -22,9 +22,9 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModelProvider
 import mikes.dept.presentation.R
 import mikes.dept.presentation.di.core.SubcomponentProvider
-import mikes.dept.presentation.ui.core.BaseComposeFragment
+import mikes.dept.presentation.ui.core.navdirections.NavDirectionsComposeFragment
 
-class PhotoListFragment : BaseComposeFragment<PhotoListViewModel>() {
+class PhotoListFragment : NavDirectionsComposeFragment<PhotoListViewModel>() {
 
     private companion object {
         private const val GRID_CELL_COUNT = 3
@@ -41,8 +41,6 @@ class PhotoListFragment : BaseComposeFragment<PhotoListViewModel>() {
     override fun ComposeContent() {
         ComposeContentView(viewModel = viewModel)
     }
-
-    override fun setup() {}
 
     @Composable
     private fun ComposeContentView(viewModel: PhotoListViewModel) {
