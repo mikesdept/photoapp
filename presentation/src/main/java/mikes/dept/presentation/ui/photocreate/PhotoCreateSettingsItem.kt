@@ -30,7 +30,7 @@ data class PhotoCreateSettingsItem(
         companion object {
             fun defaultSettings(): TextSettings = TextSettings(
                 text = "",
-                textSize = 20.sp,
+                textSize = 50.sp,
                 textColor = Color.Black,
                 offsetX = 0f,
                 offsetY = 0f,
