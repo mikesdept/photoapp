@@ -29,6 +29,7 @@ interface PhotoCreateViewModel : NavDirectionsViewModel {
     val backgroundColor: StateFlow<Color>
     val image: StateFlow<Uri?>
     val imageLastSelected: StateFlow<Boolean>
+    val contentSize: StateFlow<Int?>
 
     fun onTextInputChanged(text: String)
     fun onTextOffsetChanged(offset: Offset)
@@ -36,6 +37,7 @@ interface PhotoCreateViewModel : NavDirectionsViewModel {
     fun onChangeBackground()
     fun onChangeTextColor()
     fun onImageSelected(uri: Uri)
+    fun updateContentSize(size: Int)
 
 }
 
@@ -94,6 +96,8 @@ class PhotoCreateViewModelImpl @Inject constructor() : NavDirectionsViewModelImp
 
     override val imageLastSelected: MutableStateFlow<Boolean> = MutableStateFlow(false)
 
+    override val contentSize: MutableStateFlow<Int?> = MutableStateFlow(null)
+
     override fun onTextInputChanged(text: String) {
         photoCreateSettingsItem.value = photoCreateSettingsItem.value.copy(
             textSettings = photoCreateSettingsItem.value.textSettings.copy(
@@ -103,12 +107,16 @@ class PhotoCreateViewModelImpl @Inject constructor() : NavDirectionsViewModelImp
     }
 
     override fun onTextOffsetChanged(offset: Offset) {
-        photoCreateSettingsItem.value = photoCreateSettingsItem.value.copy(
-            textSettings = photoCreateSettingsItem.value.textSettings.copy(
-                offsetX = offset.x,
-                offsetY = offset.y
+        val contentSize = this.contentSize.value
+        // TODO: condition should be improved in order to move text only inside the box
+        if (contentSize != null && offset.x >= 0f && offset.y >= 0f && offset.x <= contentSize - 100 && offset.y < contentSize - 100) {
+            photoCreateSettingsItem.value = photoCreateSettingsItem.value.copy(
+                textSettings = photoCreateSettingsItem.value.textSettings.copy(
+                    offsetX = offset.x,
+                    offsetY = offset.y
+                )
             )
-        )
+        }
     }
 
     override fun onTextSizeChanged(textUnit: TextUnit) {
@@ -143,6 +151,10 @@ class PhotoCreateViewModelImpl @Inject constructor() : NavDirectionsViewModelImp
         )
     }
 
+    override fun updateContentSize(size: Int) {
+        contentSize.value = size
+    }
+
 }
 
 class PhotoCreateViewModelComposable : PhotoCreateViewModel {
@@ -155,6 +167,7 @@ class PhotoCreateViewModelComposable : PhotoCreateViewModel {
     override val backgroundColor: StateFlow<Color> = MutableStateFlow(PhotoColorUtils.getInitialBackgroundColor())
     override val image: StateFlow<Uri?> = MutableStateFlow(null)
     override val imageLastSelected: StateFlow<Boolean> = MutableStateFlow(false)
+    override val contentSize: StateFlow<Int?> = MutableStateFlow(null)
 
     override fun onTextInputChanged(text: String) {}
     override fun onTextOffsetChanged(offset: Offset) {}
@@ -162,6 +175,7 @@ class PhotoCreateViewModelComposable : PhotoCreateViewModel {
     override fun onChangeBackground() {}
     override fun onChangeTextColor() {}
     override fun onImageSelected(uri: Uri) {}
+    override fun updateContentSize(size: Int) {}
 
     override val navDirections: Flow<NavDirectionsEvent> = flowOf()
     override val error: Flow<ErrorEvent> = flowOf()

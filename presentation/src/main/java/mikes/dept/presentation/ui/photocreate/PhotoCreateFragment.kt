@@ -15,6 +15,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModelProvider
@@ -61,6 +62,14 @@ class PhotoCreateFragment : BaseComposeFragment<PhotoCreateViewModel>() {
                     .aspectRatio(1f)
                     .background(viewModel.backgroundColor.collectAsStateWithLifecycle().value)
                     .weight(1f)
+                    .then(
+                        when {
+                            viewModel.contentSize.collectAsStateWithLifecycle().value != null -> Modifier
+                            else -> Modifier.onGloballyPositioned { layoutCoordinates ->
+                                viewModel.updateContentSize(size = layoutCoordinates.size.width)
+                            }
+                        }
+                    )
             ) {
                 if (viewModel.imageLastSelected.collectAsStateWithLifecycle().value) {
                     AsyncImage(
