@@ -59,6 +59,7 @@ dependencies {
     implementation(libs.compose.activity)
     debugImplementation(libs.compose.tooling)
     debugImplementation(libs.compose.test.manifest)
+    implementation(libs.coil.compose)
 
     implementation(libs.gson)
 }
