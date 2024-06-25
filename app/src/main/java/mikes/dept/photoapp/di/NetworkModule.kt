@@ -8,6 +8,8 @@ import dagger.Provides
 import kotlinx.serialization.json.Json
 import mikes.dept.data.network.NetworkService
 import mikes.dept.data.network.interceptor.ExceptionsInterceptor
+import mikes.dept.domain.entities.AppKeys
+import mikes.dept.photoapp.BuildConfig
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -32,7 +34,7 @@ class NetworkModule {
     @Provides
     fun getClient(okHttpClient: OkHttpClient, converterFactory: Factory): Retrofit = Retrofit.Builder()
         .addConverterFactory(converterFactory)
-        .baseUrl("base_url") // TODO: setup api
+        .baseUrl(BuildConfig.BASE_ENDPOINT)
         .addCallAdapterFactory(CoroutineCallAdapterFactory())
         .client(okHttpClient)
         .build()
@@ -65,4 +67,10 @@ class NetworkModule {
 
     @Provides
     fun gson() = Gson()
+
+    @Provides
+    fun provideAppKeys(): AppKeys = AppKeys(
+        accessKey = BuildConfig.ACCESS_KEY,
+        secretKey = BuildConfig.SECRET_KEY
+    )
 }

@@ -28,6 +28,16 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+
+            buildConfigField(type = "String", name = "BASE_ENDPOINT", value = "\"https://api.unsplash.com/\"")
+            buildConfigField(type = "String", name = "ACCESS_KEY", value = "\"d0AJ_kOVF_fqN3ngsCow4HpzvQHE-TzwbOp3gtbQyZo\"")
+            buildConfigField(type = "String", name = "SECRET_KEY", value = "\"6PNccJVfXQTAmmZv1q_ZFDRdz0gBKFDuo3fUMPpf9t4\"")
+        }
+        debug {
+            isDebuggable = true
+            buildConfigField(type = "String", name = "BASE_ENDPOINT", value = "\"https://api.unsplash.com/\"")
+            buildConfigField(type = "String", name = "ACCESS_KEY", value = "\"d0AJ_kOVF_fqN3ngsCow4HpzvQHE-TzwbOp3gtbQyZo\"")
+            buildConfigField(type = "String", name = "SECRET_KEY", value = "\"6PNccJVfXQTAmmZv1q_ZFDRdz0gBKFDuo3fUMPpf9t4\"")
         }
     }
     compileOptions {
@@ -36,6 +46,9 @@ android {
     }
     kotlinOptions {
         jvmTarget = JavaVersion.VERSION_17.toString()
+    }
+    buildFeatures {
+        buildConfig = true
     }
     packaging {
         resources {
