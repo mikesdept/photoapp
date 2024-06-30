@@ -10,12 +10,11 @@ import mikes.dept.data.network.NetworkService
 import mikes.dept.data.network.entities.response.PhotoResponse
 import mikes.dept.data.utils.JsonUtils
 import mikes.dept.domain.entities.AppKeys
-import mikes.dept.domain.entities.PhotoEntity
 import javax.inject.Inject
 
 interface PhotoNetworkDataSource {
 
-    suspend fun getPhotos(page: Int): List<PhotoEntity>
+    suspend fun getPhotos(page: Int): List<PhotoResponse>
 
 }
 
@@ -24,9 +23,8 @@ class PhotoNetworkDataSourceImpl @Inject constructor(
     private val appKeys: AppKeys
 ) : PhotoNetworkDataSource {
 
-    override suspend fun getPhotos(page: Int): List<PhotoEntity> = withContext(Dispatchers.IO) {
+    override suspend fun getPhotos(page: Int): List<PhotoResponse> = withContext(Dispatchers.IO) {
         networkService.getPhotos(clientId = appKeys.accessKey, page = page)
-            .map { photoResponse -> photoResponse.toDomain() }
     }
 
 }
@@ -40,14 +38,14 @@ class PhotoNetworkMockDataSourceImpl @Inject constructor(
         private const val MOCK_RESPONSE_DELAY = 2000L
     }
 
-    override suspend fun getPhotos(page: Int): List<PhotoEntity> = withContext(Dispatchers.IO) {
+    override suspend fun getPhotos(page: Int): List<PhotoResponse> = withContext(Dispatchers.IO) {
         runCatching {
             delay(MOCK_RESPONSE_DELAY)
             val jsonString = JsonUtils.loadJSONFromAsset(context = context, fileName = "mock_response.json")
             json.decodeFromString(
                 deserializer = ListSerializer(elementSerializer = PhotoResponse.serializer()),
                 string = jsonString
-            ).map { photoResponse -> photoResponse.toDomain() }
+            )
         }.getOrElse { listOf() }
     }
 

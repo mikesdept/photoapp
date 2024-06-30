@@ -2,7 +2,7 @@ package mikes.dept.data.network.entities.response
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import mikes.dept.domain.entities.PhotoEntity
+import mikes.dept.data.database.entities.PhotoDBEntity
 
 @Serializable
 data class PhotoResponse(
@@ -16,7 +16,7 @@ data class PhotoResponse(
         @SerialName("small") val small: String
     )
 
-    fun toDomain(): PhotoEntity = PhotoEntity(
+    fun toDb(): PhotoDBEntity = PhotoDBEntity(
         id = id,
         regularUrl = urls.regular,
         smallUrl = urls.small
