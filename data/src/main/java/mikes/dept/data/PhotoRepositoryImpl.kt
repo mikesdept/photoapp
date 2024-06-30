@@ -15,7 +15,7 @@ class PhotoRepositoryImpl @Inject constructor(
 ) : PhotoRepository<PagingData<PhotoEntity>> {
 
     private companion object {
-        private const val PAGE_SIZE = 50
+        private const val PAGE_SIZE = 10
         private val pagingConfig = PagingConfig(pageSize = PAGE_SIZE, enablePlaceholders = false, initialLoadSize = PAGE_SIZE)
     }
 
