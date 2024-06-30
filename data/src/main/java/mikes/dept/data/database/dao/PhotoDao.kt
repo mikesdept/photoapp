@@ -13,6 +13,12 @@ interface PhotoDao {
     @Query("SELECT * FROM PhotoDBEntity")
     fun getAll(): PagingSource<Int, PhotoDBEntity>
 
+    @Query("SELECT * FROM PhotoDBEntity WHERE idLocal = (SELECT MIN(idLocal) FROM PhotoDBEntity)")
+    suspend fun getFirstPhoto(): PhotoDBEntity?
+
+    @Query("SELECT * FROM PhotoDBEntity WHERE idLocal = (SELECT MAX(idLocal) FROM PhotoDBEntity)")
+    suspend fun getLastPhoto(): PhotoDBEntity?
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(photoList: List<PhotoDBEntity>)
 
