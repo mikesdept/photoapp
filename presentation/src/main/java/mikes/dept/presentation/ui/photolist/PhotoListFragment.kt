@@ -21,12 +21,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModelProvider
 import androidx.paging.LoadState
+import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import coil.compose.AsyncImage
 import mikes.dept.domain.entities.PhotoEntity
 import mikes.dept.presentation.R
 import mikes.dept.presentation.di.core.SubcomponentProvider
 import mikes.dept.presentation.ui.core.navdirections.NavDirectionsComposeFragment
+import mikes.dept.presentation.ui.core.navdirections.event.ErrorEvent
 
 class PhotoListFragment : NavDirectionsComposeFragment<PhotoListViewModel>() {
 
@@ -54,6 +56,7 @@ class PhotoListFragment : NavDirectionsComposeFragment<PhotoListViewModel>() {
                 .background(color = Color.White)
         ) {
             val photos = viewModel.photos.collectAsLazyPagingItems()
+                .catchError()
             LazyVerticalStaggeredGrid(
                 columns = StaggeredGridCells.Fixed(count = GRID_CELL_COUNT),
                 contentPadding = PaddingValues(bottom = 100.dp),
@@ -67,9 +70,6 @@ class PhotoListFragment : NavDirectionsComposeFragment<PhotoListViewModel>() {
                         PhotoItem(index = index, photoEntity = photoEntity)
                     }
                 }
-            }
-            if (photos.loadState.append is LoadState.Error) {
-                // TODO: show error -> showError(errorEvent = ErrorEvent())
             }
             Button(
                 onClick = { viewModel.onClickCreatePhoto() },
@@ -105,6 +105,18 @@ class PhotoListFragment : NavDirectionsComposeFragment<PhotoListViewModel>() {
     private fun getPhotoAspectRatioById(id: Int): Float = when {
         (id - 3) % 10 == 0 || (id - 6) % 10 == 0 -> 0.5f
         else -> 1f
+    }
+
+    private fun LazyPagingItems<PhotoEntity>.catchError(): LazyPagingItems<PhotoEntity> {
+        val errorState = loadState.source.append as? LoadState.Error
+            ?: loadState.source.prepend as? LoadState.Error
+            ?: loadState.append as? LoadState.Error
+            ?: loadState.prepend as? LoadState.Error
+        val errorMessage = errorState?.error?.localizedMessage
+        if (errorMessage != null) {
+            showError(errorEvent = ErrorEvent.StringMessage(message = errorMessage))
+        }
+        return this
     }
 
     @Preview
