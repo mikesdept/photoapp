@@ -55,6 +55,8 @@ dependencies {
     // OkHttp
     api(libs.logging.interceptor)
 
+    implementation(libs.compose.paging)
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
 }

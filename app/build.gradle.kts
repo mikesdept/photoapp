@@ -79,5 +79,7 @@ dependencies {
     implementation(libs.androidx.room)
     ksp(libs.androidx.room.compiler)
 
+    implementation(libs.compose.paging)
+
     implementation(libs.androidx.appcompat)
 }

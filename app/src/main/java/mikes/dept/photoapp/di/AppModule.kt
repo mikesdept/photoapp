@@ -5,7 +5,8 @@ import dagger.Module
 @Module(
     includes = [
         NetworkModule::class,
-        RoomModule::class
+        RoomModule::class,
+        BindModule::class
     ]
 )
 interface AppModule
