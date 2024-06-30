@@ -1,6 +1,7 @@
 package mikes.dept.presentation.ui.photolist
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.aspectRatio
@@ -8,19 +9,20 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModelProvider
 import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
+import coil.compose.AsyncImage
 import mikes.dept.domain.entities.PhotoEntity
 import mikes.dept.presentation.R
 import mikes.dept.presentation.di.core.SubcomponentProvider
@@ -90,19 +92,14 @@ class PhotoListFragment : NavDirectionsComposeFragment<PhotoListViewModel>() {
         photoEntity: PhotoEntity,
         modifier: Modifier = Modifier
     ) {
-        Box(
+        AsyncImage(
+            model = photoEntity.smallUrl,
+            contentDescription = null,
+            contentScale = ContentScale.Crop,
             modifier = modifier
-                .aspectRatio(getPhotoAspectRatioById(id = index))
-                .background(
-                    color = Color.Red,
-                    shape = RoundedCornerShape(size = 16.dp)
-                )
-        ) {
-            Text(
-                text = photoEntity.id,
-                modifier = Modifier.align(Alignment.Center)
-            )
-        }
+                .aspectRatio(getPhotoAspectRatioById(id = index + 1))
+                .clickable {  } // TODO: on click item
+        )
     }
 
     private fun getPhotoAspectRatioById(id: Int): Float = when {
