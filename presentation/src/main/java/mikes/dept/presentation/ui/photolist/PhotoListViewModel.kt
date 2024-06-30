@@ -26,7 +26,7 @@ class PhotoListViewModelImpl @Inject constructor(
 ) : NavDirectionsViewModelImpl(), PhotoListViewModel {
 
     override val photos: Flow<PagingData<PhotoEntity>> = photoRepository
-        .getPhotos()
+        .getRemotePhotos()
         .cachedIn(viewModelScope)
 
     override fun onClickCreatePhoto() {

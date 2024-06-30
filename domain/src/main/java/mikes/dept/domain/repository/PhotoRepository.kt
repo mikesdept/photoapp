@@ -4,6 +4,8 @@ import kotlinx.coroutines.flow.Flow
 
 interface PhotoRepository<T> {
 
-    fun getPhotos(): Flow<T>
+    fun getLocalCachePhotos(): Flow<T>
+
+    fun getRemotePhotos(): Flow<T>
 
 }
