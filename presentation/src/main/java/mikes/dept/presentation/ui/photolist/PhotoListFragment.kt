@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
-import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
@@ -20,6 +19,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModelProvider
+import androidx.paging.LoadState
+import androidx.paging.compose.collectAsLazyPagingItems
+import mikes.dept.domain.entities.PhotoEntity
 import mikes.dept.presentation.R
 import mikes.dept.presentation.di.core.SubcomponentProvider
 import mikes.dept.presentation.ui.core.navdirections.NavDirectionsComposeFragment
@@ -49,15 +51,23 @@ class PhotoListFragment : NavDirectionsComposeFragment<PhotoListViewModel>() {
                 .fillMaxSize()
                 .background(color = Color.White)
         ) {
+            val photos = viewModel.photos.collectAsLazyPagingItems()
             LazyVerticalStaggeredGrid(
                 columns = StaggeredGridCells.Fixed(count = GRID_CELL_COUNT),
                 contentPadding = PaddingValues(bottom = 100.dp),
                 modifier = Modifier.fillMaxSize()
             ) {
-                // TODO: fetch real data
-                items(listOf(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26)) { item ->
-                    PhotoItem(photoId = item)
+                items(
+                    count = photos.itemCount,
+                    key = { index -> index }
+                ) { index ->
+                    photos[index]?.let { photoEntity ->
+                        PhotoItem(index = index, photoEntity = photoEntity)
+                    }
                 }
+            }
+            if (photos.loadState.append is LoadState.Error) {
+                // TODO: show error -> showError(errorEvent = ErrorEvent())
             }
             Button(
                 onClick = { viewModel.onClickCreatePhoto() },
@@ -76,19 +86,20 @@ class PhotoListFragment : NavDirectionsComposeFragment<PhotoListViewModel>() {
     // TODO: change image UI
     @Composable
     private fun PhotoItem(
-        photoId: Int,
+        index: Int,
+        photoEntity: PhotoEntity,
         modifier: Modifier = Modifier
     ) {
         Box(
             modifier = modifier
-                .aspectRatio(getPhotoAspectRatioById(id = photoId))
+                .aspectRatio(getPhotoAspectRatioById(id = index))
                 .background(
                     color = Color.Red,
                     shape = RoundedCornerShape(size = 16.dp)
                 )
         ) {
             Text(
-                text = photoId.toString(),
+                text = photoEntity.id,
                 modifier = Modifier.align(Alignment.Center)
             )
         }

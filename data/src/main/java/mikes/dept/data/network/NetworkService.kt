@@ -6,7 +6,7 @@ import retrofit2.http.Query
 
 interface NetworkService {
 
-    @GET("photos")
+    @GET(ApiEndpoint.getPhotos)
     suspend fun getPhotos(
         @Query("client_id") clientId: String,
         @Query("page") page: Int
