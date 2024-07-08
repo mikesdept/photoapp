@@ -4,11 +4,12 @@ plugins {
     alias(libs.plugins.kotlin.parcelize)
     alias(libs.plugins.navigation.safeargs)
     alias(libs.plugins.kotlin.ksp)
+    alias(libs.plugins.compose.compiler)
 }
 
 android {
     namespace = "mikes.dept.presentation"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         minSdk = 24
@@ -36,9 +37,6 @@ android {
     buildFeatures {
         viewBinding = true
         compose = true
-    }
-    composeOptions {
-        kotlinCompilerExtensionVersion = libs.versions.kotlinCompilerExtensionVersion.get()
     }
 }
 
