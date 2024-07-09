@@ -12,6 +12,7 @@ import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -21,9 +22,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModelProvider
 import androidx.paging.LoadState
+import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import coil.compose.AsyncImage
+import kotlinx.coroutines.flow.Flow
 import mikes.dept.domain.entities.PhotoEntity
 import mikes.dept.presentation.R
 import mikes.dept.presentation.di.core.SubcomponentProvider
@@ -55,8 +58,7 @@ class PhotoListFragment : NavDirectionsComposeFragment<PhotoListViewModel>() {
                 .fillMaxSize()
                 .background(color = Color.White)
         ) {
-            val photos = viewModel.photos.collectAsLazyPagingItems()
-                .catchError()
+            val photos = viewModel.photos.collectAndHandleError()
             LazyVerticalStaggeredGrid(
                 columns = StaggeredGridCells.Fixed(count = GRID_CELL_COUNT),
                 contentPadding = PaddingValues(bottom = 100.dp),
@@ -82,7 +84,6 @@ class PhotoListFragment : NavDirectionsComposeFragment<PhotoListViewModel>() {
         }
     }
 
-    // TODO: change image UI
     @Composable
     private fun PhotoItem(
         index: Int,
@@ -95,7 +96,7 @@ class PhotoListFragment : NavDirectionsComposeFragment<PhotoListViewModel>() {
             contentScale = ContentScale.Crop,
             modifier = modifier
                 .aspectRatio(getPhotoAspectRatioById(id = index + 1))
-                .clickable {  } // TODO: on click item
+                .clickable {}
         )
     }
 
@@ -104,16 +105,20 @@ class PhotoListFragment : NavDirectionsComposeFragment<PhotoListViewModel>() {
         else -> 1f
     }
 
-    private fun LazyPagingItems<PhotoEntity>.catchError(): LazyPagingItems<PhotoEntity> {
-        val errorState = loadState.source.append as? LoadState.Error
-            ?: loadState.source.prepend as? LoadState.Error
-            ?: loadState.append as? LoadState.Error
-            ?: loadState.prepend as? LoadState.Error
-        val errorMessage = errorState?.error?.localizedMessage
-        if (errorMessage != null) {
-            showError(errorEvent = ErrorEvent.StringMessage(message = errorMessage))
+    @Composable
+    private fun Flow<PagingData<PhotoEntity>>.collectAndHandleError(): LazyPagingItems<PhotoEntity> {
+        val photos = collectAsLazyPagingItems()
+        val loadStateMediator = photos.loadState.mediator
+        LaunchedEffect(loadStateMediator) {
+            val loadStateError = loadStateMediator?.append as? LoadState.Error
+                ?: loadStateMediator?.prepend as? LoadState.Error
+                ?: loadStateMediator?.refresh as? LoadState.Error
+            val errorMessage = loadStateError?.error?.localizedMessage
+            if (errorMessage != null) {
+                showError(errorEvent = ErrorEvent.StringMessage(message = errorMessage))
+            }
         }
-        return this
+        return photos
     }
 
     @Preview
