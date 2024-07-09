@@ -90,9 +90,14 @@ class PhotoPagingRemoteMediatorDataSource(
 
     private suspend fun getRemoteKeyForLastItem(
         state: PagingState<Int, PhotoDBEntity>
-    ): PhotoRemoteKeysDBEntity? = state.pages.lastOrNull()
-        ?.data?.lastOrNull()?.id
-        ?.let { id -> photoAppDatabase.photoRemoteKeysDao().getRemoteKeyById(id = id) }
+    ): PhotoRemoteKeysDBEntity? {
+        val lastPagingItemId = state.pages.lastOrNull()?.data?.lastOrNull()?.id
+        val remoteKeyId = when (lastPagingItemId) {
+            null -> photoAppDatabase.photoDao().getLastPhoto()?.id
+            else -> lastPagingItemId
+        }
+        return remoteKeyId?.let { id -> photoAppDatabase.photoRemoteKeysDao().getRemoteKeyById(id = id) }
+    }
 
     private fun List<PhotoResponse>.toDb(): List<PhotoDBEntity> = map { photoResponse -> photoResponse.toDb() }
 
