@@ -66,16 +66,12 @@ class PhotoPagingRemoteMediatorDataSource(
             currentPage = getRemoteKeyClosestToCurrentPosition(state)?.nextKey?.minus(ONE_PAGE) ?: DEFAULT_START_PAGE,
             endOfPaginationReached = false
         )
-        LoadType.PREPEND -> {
-            val remoteKeys = getRemoteKeyForFirstOrLastItem(isFirst = true, state = state)
-            val previousKey = remoteKeys?.previousKey
-            CurrentPageData(
-                currentPage = previousKey,
-                endOfPaginationReached = remoteKeys == null
-            )
-        }
+        LoadType.PREPEND -> CurrentPageData(
+            currentPage = null,
+            endOfPaginationReached = true
+        )
         LoadType.APPEND -> {
-            val remoteKeys = getRemoteKeyForFirstOrLastItem(isFirst = false, state = state)
+            val remoteKeys = getRemoteKeyForLastItem(state = state)
             val nextKey = remoteKeys?.nextKey
             CurrentPageData(
                 currentPage = nextKey,
@@ -92,24 +88,10 @@ class PhotoPagingRemoteMediatorDataSource(
         }
     }
 
-    private suspend fun getRemoteKeyForFirstOrLastItem(
-        isFirst: Boolean,
+    private suspend fun getRemoteKeyForLastItem(
         state: PagingState<Int, PhotoDBEntity>
-    ): PhotoRemoteKeysDBEntity? = state.pages
-        .let { pages ->
-            when {
-                isFirst -> pages.firstOrNull()
-                else -> pages.lastOrNull()
-            }
-        }
-        ?.data
-        ?.let { photoList ->
-            when {
-                isFirst -> photoList.firstOrNull()
-                else -> photoList.lastOrNull()
-            }
-        }
-        ?.id
+    ): PhotoRemoteKeysDBEntity? = state.pages.lastOrNull()
+        ?.data?.lastOrNull()?.id
         ?.let { id -> photoAppDatabase.photoRemoteKeysDao().getRemoteKeyById(id = id) }
 
     private fun List<PhotoResponse>.toDb(): List<PhotoDBEntity> = map { photoResponse -> photoResponse.toDb() }

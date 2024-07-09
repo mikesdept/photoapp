@@ -33,7 +33,7 @@ import mikes.dept.presentation.ui.core.navdirections.event.ErrorEvent
 class PhotoListFragment : NavDirectionsComposeFragment<PhotoListViewModel>() {
 
     private companion object {
-        private const val GRID_CELL_COUNT = 3
+        private const val GRID_CELL_COUNT = 2
     }
 
     override fun initDagger(subcomponentProvider: SubcomponentProvider) = subcomponentProvider
@@ -62,10 +62,7 @@ class PhotoListFragment : NavDirectionsComposeFragment<PhotoListViewModel>() {
                 contentPadding = PaddingValues(bottom = 100.dp),
                 modifier = Modifier.fillMaxSize()
             ) {
-                items(
-                    count = photos.itemCount,
-                    key = { index -> index }
-                ) { index ->
+                items(count = photos.itemCount) { index ->
                     photos[index]?.let { photoEntity ->
                         PhotoItem(index = index, photoEntity = photoEntity)
                     }

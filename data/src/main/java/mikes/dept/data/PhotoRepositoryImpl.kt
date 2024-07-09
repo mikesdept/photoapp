@@ -22,7 +22,7 @@ class PhotoRepositoryImpl @Inject constructor(
 
     private companion object {
         private const val PAGE_SIZE = 10
-        private val pagingConfig = PagingConfig(pageSize = PAGE_SIZE, enablePlaceholders = false, initialLoadSize = PAGE_SIZE)
+        private val pagingConfig = PagingConfig(pageSize = PAGE_SIZE)
     }
 
     @OptIn(ExperimentalPagingApi::class)
