@@ -42,10 +42,12 @@ class PhotoNetworkMockDataSourceImpl @Inject constructor(
         runCatching {
             delay(MOCK_RESPONSE_DELAY)
             val jsonString = JsonUtils.loadJSONFromAsset(context = context, fileName = "mock_response.json")
-            json.decodeFromString(
-                deserializer = ListSerializer(elementSerializer = PhotoResponse.serializer()),
-                string = jsonString
-            )
+            json
+                .decodeFromString(
+                    deserializer = ListSerializer(elementSerializer = PhotoResponse.serializer()),
+                    string = jsonString
+                )
+                .map { photoResponse -> photoResponse.copy(id = "$page***${photoResponse.id}") }
         }.getOrElse { listOf() }
     }
 
