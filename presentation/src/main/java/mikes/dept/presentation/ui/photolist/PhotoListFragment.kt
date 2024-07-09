@@ -100,7 +100,7 @@ class PhotoListFragment : NavDirectionsComposeFragment<PhotoListViewModel>() {
     }
 
     private fun getPhotoAspectRatioById(id: Int): Float = when {
-        (id - 3) % 10 == 0 || (id - 6) % 10 == 0 -> 0.5f
+        (id - 3) % 10 == 0 || (id - 9) % 10 == 0 -> 0.5f
         else -> 1f
     }
 
