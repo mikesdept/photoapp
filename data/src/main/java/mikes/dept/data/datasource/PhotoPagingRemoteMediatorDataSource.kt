@@ -9,6 +9,7 @@ import mikes.dept.data.database.PhotoAppDatabase
 import mikes.dept.data.database.entities.PhotoDBEntity
 import mikes.dept.data.database.entities.PhotoRemoteKeysDBEntity
 import mikes.dept.data.network.entities.response.PhotoResponse
+import mikes.dept.domain.exceptions.FirstPageNetworkException
 
 @OptIn(ExperimentalPagingApi::class)
 class PhotoPagingRemoteMediatorDataSource(
@@ -34,7 +35,12 @@ class PhotoPagingRemoteMediatorDataSource(
 
         val result = runCatching {
             Result.Success(data = networkDataSource.getPhotos(page = currentPage))
-        }.getOrElse { throwable -> Result.Failure(throwable = throwable) }
+        }.getOrElse { throwable ->
+            when {
+                currentPage == DEFAULT_START_PAGE -> Result.Failure(throwable = FirstPageNetworkException())
+                else -> Result.Failure(throwable = throwable)
+            }
+        }
 
         return when (result) {
             is Result.Failure -> MediatorResult.Error(result.throwable)
@@ -51,7 +57,7 @@ class PhotoPagingRemoteMediatorDataSource(
                         PhotoRemoteKeysDBEntity(id = photoEntity.id, previousKey = previousKey, nextKey = nextKey)
                     }
                     photoAppDatabase.photoRemoteKeysDao().insertAll(keys)
-                    photoAppDatabase.photoDao().insertAll(result.data.toDb())
+                    photoAppDatabase.photoDao().insertAll(result.data.toDb(page = currentPage))
                 }
                 MediatorResult.Success(endOfPaginationReached = endOfPaginationReached)
             }
@@ -99,7 +105,9 @@ class PhotoPagingRemoteMediatorDataSource(
         return remoteKeyId?.let { id -> photoAppDatabase.photoRemoteKeysDao().getRemoteKeyById(id = id) }
     }
 
-    private fun List<PhotoResponse>.toDb(): List<PhotoDBEntity> = map { photoResponse -> photoResponse.toDb() }
+    private fun List<PhotoResponse>.toDb(page: Int): List<PhotoDBEntity> = map { photoResponse ->
+        photoResponse.toDb(page = page)
+    }
 
     private sealed class Result {
 

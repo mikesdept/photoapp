@@ -17,8 +17,9 @@ data class PhotoResponse(
         @SerialName("small") val small: String
     )
 
-    fun toDb(): PhotoDBEntity = PhotoDBEntity(
+    fun toDb(page: Int): PhotoDBEntity = PhotoDBEntity(
         id = id,
+        page = page,
         regularUrl = urls.regular,
         smallUrl = urls.small
     )

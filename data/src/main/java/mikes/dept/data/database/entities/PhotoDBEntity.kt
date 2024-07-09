@@ -9,6 +9,7 @@ import mikes.dept.domain.entities.PhotoEntity
 data class PhotoDBEntity(
     @PrimaryKey(autoGenerate = true) @ColumnInfo(name = "idLocal") val idLocal: Long = 0L,
     @ColumnInfo(name = "id") val id: String,
+    @ColumnInfo(name = "page") val page: Int,
     @ColumnInfo(name = "regularUrl") val regularUrl: String,
     @ColumnInfo(name = "smallUrl") val smallUrl: String
 ) {

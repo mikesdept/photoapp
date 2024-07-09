@@ -13,6 +13,9 @@ interface PhotoDao {
     @Query("SELECT * FROM PhotoDBEntity")
     fun getAll(): PagingSource<Int, PhotoDBEntity>
 
+    @Query("SELECT * FROM PhotoDBEntity WHERE page = :page")
+    suspend fun getPhotos(page: Int): List<PhotoDBEntity>?
+
     @Query("SELECT * FROM PhotoDBEntity WHERE idLocal = (SELECT MIN(idLocal) FROM PhotoDBEntity)")
     suspend fun getFirstPhoto(): PhotoDBEntity?
 

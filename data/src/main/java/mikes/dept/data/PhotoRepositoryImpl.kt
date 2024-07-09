@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import mikes.dept.data.database.PhotoAppDatabase
 import mikes.dept.data.datasource.PhotoNetworkDataSource
-import mikes.dept.data.datasource.PhotoPagingDataSource
+import mikes.dept.data.datasource.PhotoPagingCacheDataSource
 import mikes.dept.data.datasource.PhotoPagingRemoteMediatorDataSource
 import mikes.dept.domain.entities.PhotoEntity
 import mikes.dept.domain.repository.PhotoRepository
@@ -25,8 +25,13 @@ class PhotoRepositoryImpl @Inject constructor(
         private val pagingConfig = PagingConfig(pageSize = PAGE_SIZE)
     }
 
-    @OptIn(ExperimentalPagingApi::class)
     override fun getLocalCachePhotos(): Flow<PagingData<PhotoEntity>> = Pager(
+        config = pagingConfig,
+        pagingSourceFactory = { PhotoPagingCacheDataSource(photoAppDatabase = photoAppDatabase) }
+    ).flow
+
+    @OptIn(ExperimentalPagingApi::class)
+    override fun getRemotePhotos(): Flow<PagingData<PhotoEntity>> = Pager(
         config = pagingConfig,
         remoteMediator = PhotoPagingRemoteMediatorDataSource(
             photoAppDatabase = photoAppDatabase,
@@ -36,10 +41,5 @@ class PhotoRepositoryImpl @Inject constructor(
     ).flow.map { pagingData ->
         pagingData.map { photoDbEntity -> photoDbEntity.toDomain() }
     }
-
-    override fun getRemotePhotos(): Flow<PagingData<PhotoEntity>> = Pager(
-        config = pagingConfig,
-        pagingSourceFactory = { PhotoPagingDataSource(networkDataSource = networkDataSource) }
-    ).flow
 
 }

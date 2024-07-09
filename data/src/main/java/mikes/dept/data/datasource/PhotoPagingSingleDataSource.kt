@@ -5,14 +5,14 @@ import androidx.paging.PagingState
 import mikes.dept.domain.entities.PhotoEntity
 import kotlin.math.max
 
-class PhotoPagingDataSource(
-    private val networkDataSource: PhotoNetworkDataSource
-) : PagingSource<Int, PhotoEntity>() {
+abstract class PhotoPagingSingleDataSource : PagingSource<Int, PhotoEntity>() {
 
     private companion object {
         private const val DEFAULT_START_PAGE = 0
         private const val ONE_PAGE = 1
     }
+
+    abstract suspend fun getPhotos(currentPage: Int): List<PhotoEntity>
 
     override fun getRefreshKey(state: PagingState<Int, PhotoEntity>): Int? = null
 
@@ -20,9 +20,7 @@ class PhotoPagingDataSource(
         val currentPage = params.key ?: DEFAULT_START_PAGE
 
         val result = runCatching {
-            val data = networkDataSource.getPhotos(page = currentPage)
-                .map { photoResponse -> photoResponse.toDomain() }
-            Result.Success(data = data)
+            Result.Success(data = getPhotos(currentPage = currentPage))
         }.getOrElse { throwable -> Result.Failure(throwable = throwable) }
 
         return when (result) {

@@ -28,6 +28,7 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import coil.compose.AsyncImage
 import kotlinx.coroutines.flow.Flow
 import mikes.dept.domain.entities.PhotoEntity
+import mikes.dept.domain.exceptions.FirstPageNetworkException
 import mikes.dept.presentation.R
 import mikes.dept.presentation.di.core.SubcomponentProvider
 import mikes.dept.presentation.ui.core.navdirections.NavDirectionsComposeFragment
@@ -113,9 +114,13 @@ class PhotoListFragment : NavDirectionsComposeFragment<PhotoListViewModel>() {
             val loadStateError = loadStateMediator?.append as? LoadState.Error
                 ?: loadStateMediator?.prepend as? LoadState.Error
                 ?: loadStateMediator?.refresh as? LoadState.Error
-            val errorMessage = loadStateError?.error?.localizedMessage
+            val error = loadStateError?.error
+            val errorMessage = error?.localizedMessage
             if (errorMessage != null) {
                 showError(errorEvent = ErrorEvent.StringMessage(message = errorMessage))
+            }
+            if (error is FirstPageNetworkException) {
+                viewModel.changeToCacheOnlyDataSource()
             }
         }
         return photos
