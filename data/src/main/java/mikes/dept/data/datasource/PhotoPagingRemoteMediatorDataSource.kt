@@ -8,6 +8,7 @@ import androidx.room.withTransaction
 import mikes.dept.data.database.PhotoAppDatabase
 import mikes.dept.data.database.entities.PhotoDBEntity
 import mikes.dept.data.database.entities.PhotoRemoteKeysDBEntity
+import mikes.dept.data.mapper.toDb
 import mikes.dept.data.network.entities.response.PhotoResponse
 import mikes.dept.domain.exceptions.FirstPageNetworkException
 

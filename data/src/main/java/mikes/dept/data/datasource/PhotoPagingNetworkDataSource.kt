@@ -1,5 +1,6 @@
 package mikes.dept.data.datasource
 
+import mikes.dept.data.mapper.toDomain
 import mikes.dept.domain.entities.PhotoEntity
 
 class PhotoPagingNetworkDataSource(
@@ -8,6 +9,6 @@ class PhotoPagingNetworkDataSource(
 
     override suspend fun getPhotos(currentPage: Int): List<PhotoEntity> = networkDataSource
         .getPhotos(page = currentPage)
-        .map { photoResponse -> photoResponse.toDomain() }
+        .map { photoResponse -> photoResponse.toDomain(page = currentPage) }
 
 }

@@ -1,5 +1,6 @@
 package mikes.dept.presentation.ui.photocreate
 
+import android.graphics.Bitmap
 import android.net.Uri
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
@@ -38,6 +39,7 @@ interface PhotoCreateViewModel : NavDirectionsViewModel {
     fun onChangeTextColor()
     fun onImageSelected(uri: Uri)
     fun updateContentSize(size: Int)
+    fun onClickCreatePhoto(bitmap: Bitmap)
 
 }
 
@@ -155,6 +157,10 @@ class PhotoCreateViewModelImpl @Inject constructor() : NavDirectionsViewModelImp
         contentSize.value = size
     }
 
+    override fun onClickCreatePhoto(bitmap: Bitmap) {
+        // TODO
+    }
+
 }
 
 class PhotoCreateViewModelComposable : PhotoCreateViewModel {
@@ -176,6 +182,7 @@ class PhotoCreateViewModelComposable : PhotoCreateViewModel {
     override fun onChangeTextColor() {}
     override fun onImageSelected(uri: Uri) {}
     override fun updateContentSize(size: Int) {}
+    override fun onClickCreatePhoto(bitmap: Bitmap) {}
 
     override val navDirections: Flow<NavDirectionsEvent> = flowOf()
     override val error: Flow<ErrorEvent> = flowOf()

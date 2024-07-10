@@ -57,6 +57,7 @@ dependencies {
     implementation(libs.compose.activity)
     implementation(libs.compose.paging)
     implementation(libs.coil.compose)
+    implementation(libs.capturable)
     debugImplementation(libs.compose.tooling)
     debugImplementation(libs.compose.test.manifest)
 

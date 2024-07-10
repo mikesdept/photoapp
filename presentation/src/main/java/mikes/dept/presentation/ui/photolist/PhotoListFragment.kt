@@ -27,6 +27,7 @@ import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import coil.compose.AsyncImage
 import kotlinx.coroutines.flow.Flow
+import mikes.dept.domain.entities.PhotoContentEntity
 import mikes.dept.domain.entities.PhotoEntity
 import mikes.dept.domain.exceptions.FirstPageNetworkException
 import mikes.dept.presentation.R
@@ -91,8 +92,9 @@ class PhotoListFragment : NavDirectionsComposeFragment<PhotoListViewModel>() {
         photoEntity: PhotoEntity,
         modifier: Modifier = Modifier
     ) {
+        val smallUrl = (photoEntity.photoContentEntity as? PhotoContentEntity.Url)?.smallUrl ?: ""
         AsyncImage(
-            model = photoEntity.smallUrl,
+            model = smallUrl,
             contentDescription = null,
             contentScale = ContentScale.Crop,
             modifier = modifier

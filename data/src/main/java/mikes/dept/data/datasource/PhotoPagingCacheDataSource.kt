@@ -1,6 +1,7 @@
 package mikes.dept.data.datasource
 
 import mikes.dept.data.database.PhotoAppDatabase
+import mikes.dept.data.mapper.toDomain
 import mikes.dept.domain.entities.PhotoEntity
 
 class PhotoPagingCacheDataSource(

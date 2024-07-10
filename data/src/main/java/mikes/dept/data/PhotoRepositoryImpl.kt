@@ -11,6 +11,7 @@ import mikes.dept.data.database.PhotoAppDatabase
 import mikes.dept.data.datasource.PhotoNetworkDataSource
 import mikes.dept.data.datasource.PhotoPagingCacheDataSource
 import mikes.dept.data.datasource.PhotoPagingRemoteMediatorDataSource
+import mikes.dept.data.mapper.toDomain
 import mikes.dept.domain.entities.PhotoEntity
 import mikes.dept.domain.repository.PhotoRepository
 import javax.inject.Inject

@@ -12,15 +12,26 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.material3.Button
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.ExperimentalComposeApi
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
+import dev.shreyaspatil.capturable.capturable
+import dev.shreyaspatil.capturable.controller.rememberCaptureController
+import kotlinx.coroutines.launch
 import mikes.dept.presentation.R
 import mikes.dept.presentation.di.core.SubcomponentProvider
 import mikes.dept.presentation.ui.compose.ColorWithTextButton
@@ -53,9 +64,11 @@ class PhotoCreateFragment : BaseComposeFragment<PhotoCreateViewModel>() {
     // TODO: save to local storage
     // TODO: open existing image from list and edit at this screen
     // TODO: animation transition between screens
+    @OptIn(ExperimentalComposeUiApi::class, ExperimentalComposeApi::class)
     @Composable
     private fun ComposeContentView(viewModel: PhotoCreateViewModel) {
         Column(modifier = Modifier.fillMaxSize()) {
+            val captureController = rememberCaptureController()
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -70,6 +83,7 @@ class PhotoCreateFragment : BaseComposeFragment<PhotoCreateViewModel>() {
                             }
                         }
                     )
+                    .capturable(captureController)
             ) {
                 if (viewModel.imageLastSelected.collectAsStateWithLifecycle().value) {
                     AsyncImage(
@@ -113,6 +127,26 @@ class PhotoCreateFragment : BaseComposeFragment<PhotoCreateViewModel>() {
                     textResId = R.string.photo_create_button_image,
                     onClick = { pickMediaLauncher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)) },
                     modifier = Modifier.padding(horizontal = 8.dp)
+                )
+            }
+            val scope = rememberCoroutineScope()
+            Button(
+                onClick = {
+                    scope.launch {
+                        runCatching {
+                            val bitmapAsync = captureController.captureAsync()
+                            val bitmap = bitmapAsync.await()
+                            viewModel.onClickCreatePhoto(bitmap = bitmap.asAndroidBitmap())
+                        }
+                    }
+                },
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+                    .padding(bottom = 32.dp)
+            ) {
+                Text(
+                    text = stringResource(id = R.string.btn_create_photo),
+                    modifier = Modifier.padding(8.dp)
                 )
             }
         }
