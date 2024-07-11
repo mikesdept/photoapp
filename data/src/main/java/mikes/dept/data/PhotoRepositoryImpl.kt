@@ -1,5 +1,6 @@
 package mikes.dept.data
 
+import android.content.Context
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
@@ -10,15 +11,19 @@ import kotlinx.coroutines.flow.map
 import mikes.dept.data.database.PhotoAppDatabase
 import mikes.dept.data.datasource.PhotoNetworkDataSource
 import mikes.dept.data.datasource.PhotoPagingCacheDataSource
+import mikes.dept.data.datasource.PhotoPagingFilesDataSource
 import mikes.dept.data.datasource.PhotoPagingRemoteMediatorDataSource
 import mikes.dept.data.mapper.toDomain
 import mikes.dept.domain.entities.PhotoEntity
+import mikes.dept.domain.repository.FilesRepository
 import mikes.dept.domain.repository.PhotoRepository
 import javax.inject.Inject
 
 class PhotoRepositoryImpl @Inject constructor(
+    private val context: Context,
     private val photoAppDatabase: PhotoAppDatabase,
-    private val networkDataSource: PhotoNetworkDataSource
+    private val networkDataSource: PhotoNetworkDataSource,
+    private val filesRepository: FilesRepository
 ) : PhotoRepository<PagingData<PhotoEntity>> {
 
     private companion object {
@@ -41,6 +46,16 @@ class PhotoRepositoryImpl @Inject constructor(
         pagingSourceFactory = { photoAppDatabase.photoDao().getAll() }
     ).flow.map { pagingData ->
         pagingData.map { photoDbEntity -> photoDbEntity.toDomain() }
+    }
+
+    override fun getPhotoFiles(): Flow<PagingData<PhotoEntity>> = Pager(
+        config = pagingConfig,
+        pagingSourceFactory = { PhotoPagingFilesDataSource(context = context, filesRepository = filesRepository) }
+    ).flow
+
+    override suspend fun savePhotoFile(base64: String) {
+        val file = filesRepository.createFile()
+        filesRepository.writeToFile(file = file, content = base64)
     }
 
 }

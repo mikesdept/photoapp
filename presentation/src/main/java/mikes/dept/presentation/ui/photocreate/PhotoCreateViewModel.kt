@@ -6,6 +6,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.TextUnit
 import androidx.lifecycle.viewModelScope
+import androidx.paging.PagingData
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -15,10 +16,13 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
+import mikes.dept.domain.entities.PhotoEntity
+import mikes.dept.domain.repository.PhotoRepository
 import mikes.dept.presentation.ui.core.navdirections.NavDirectionsViewModel
 import mikes.dept.presentation.ui.core.navdirections.NavDirectionsViewModelImpl
 import mikes.dept.presentation.ui.core.navdirections.event.ErrorEvent
 import mikes.dept.presentation.ui.core.navdirections.event.NavDirectionsEvent
+import mikes.dept.presentation.utils.BitmapUtils
 import mikes.dept.presentation.utils.PhotoColorUtils
 import javax.inject.Inject
 
@@ -43,7 +47,9 @@ interface PhotoCreateViewModel : NavDirectionsViewModel {
 
 }
 
-class PhotoCreateViewModelImpl @Inject constructor() : NavDirectionsViewModelImpl(), PhotoCreateViewModel {
+class PhotoCreateViewModelImpl @Inject constructor(
+    private val photoRepository: PhotoRepository<PagingData<PhotoEntity>>
+) : NavDirectionsViewModelImpl(), PhotoCreateViewModel {
 
     private val photoCreateSettingsItem: MutableStateFlow<PhotoCreateSettingsItem> = MutableStateFlow(
         PhotoCreateSettingsItem.defaultSettings()
@@ -158,7 +164,16 @@ class PhotoCreateViewModelImpl @Inject constructor() : NavDirectionsViewModelImp
     }
 
     override fun onClickCreatePhoto(bitmap: Bitmap) {
-        // TODO
+        doSingleAction(
+            action = {
+                val base64 = BitmapUtils.bitmapToBase64(bitmap = bitmap)
+                photoRepository.savePhotoFile(base64 = base64)
+            },
+            onSuccess = {}, // TODO: navigate back to list screen
+            onFailure = { throwable -> showError(errorEvent = ErrorEvent.StringMessage(message = throwable.localizedMessage ?: "")) },
+            onStart = {}, // TODO: show progress
+            onComplete = {} // TODO: hide progress
+        )
     }
 
 }

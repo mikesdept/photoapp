@@ -8,4 +8,8 @@ interface PhotoRepository<T> {
 
     fun getRemotePhotos(): Flow<T>
 
+    fun getPhotoFiles(): Flow<T>
+
+    suspend fun savePhotoFile(base64: String)
+
 }
