@@ -50,7 +50,7 @@ class PhotoRepositoryImpl @Inject constructor(
 
     override fun getPhotoFiles(): Flow<PagingData<PhotoEntity>> = Pager(
         config = pagingConfig,
-        pagingSourceFactory = { PhotoPagingFilesDataSource(context = context, filesRepository = filesRepository) }
+        pagingSourceFactory = { PhotoPagingFilesDataSource(filesRepository = filesRepository) }
     ).flow
 
     override suspend fun savePhotoFile(base64: String) {
