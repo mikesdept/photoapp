@@ -38,9 +38,9 @@ import mikes.dept.presentation.ui.compose.ColorWithTextButton
 import mikes.dept.presentation.ui.compose.ImageWithTextButton
 import mikes.dept.presentation.ui.compose.PhotoCreateText
 import mikes.dept.presentation.ui.compose.PhotoCreateTextInput
-import mikes.dept.presentation.ui.core.BaseComposeFragment
+import mikes.dept.presentation.ui.core.navdirections.NavDirectionsComposeFragment
 
-class PhotoCreateFragment : BaseComposeFragment<PhotoCreateViewModel>() {
+class PhotoCreateFragment : NavDirectionsComposeFragment<PhotoCreateViewModel>() {
 
     private val pickMediaLauncher = registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
         if (uri != null) {
@@ -60,7 +60,6 @@ class PhotoCreateFragment : BaseComposeFragment<PhotoCreateViewModel>() {
         ComposeContentView(viewModel = viewModel)
     }
 
-    override fun setup() {}
     // TODO: save to local storage
     // TODO: open existing image from list and edit at this screen
     // TODO: animation transition between screens

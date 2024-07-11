@@ -5,14 +5,14 @@ import android.graphics.BitmapFactory
 import android.util.Base64
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import java.nio.ByteBuffer
+import java.io.ByteArrayOutputStream
 
 object BitmapUtils {
 
     suspend fun bitmapToBase64(bitmap: Bitmap): String = withContext(Dispatchers.IO) {
-        val byteBuffer = ByteBuffer.allocate(bitmap.height * bitmap.rowBytes)
-        bitmap.copyPixelsToBuffer(byteBuffer)
-        val byteArray = byteBuffer.array()
+        val byteArrayOutputStream = ByteArrayOutputStream()
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream)
+        val byteArray = byteArrayOutputStream.toByteArray()
         Base64.encodeToString(byteArray, Base64.DEFAULT)
     }
 
