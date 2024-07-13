@@ -6,6 +6,7 @@ import androidx.paging.cachedIn
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import mikes.dept.domain.entities.PhotoEntity
@@ -19,9 +20,11 @@ import javax.inject.Inject
 interface PhotoListViewModel : NavDirectionsViewModel {
 
     val photos: Flow<PagingData<PhotoEntity>>
+    val refreshAction: StateFlow<Long?>
 
     fun changeToCacheOnlyDataSource()
     fun onClickCreatePhoto()
+    fun onRefresh()
 
 }
 
@@ -35,6 +38,8 @@ class PhotoListViewModelImpl @Inject constructor(
     override val photos: Flow<PagingData<PhotoEntity>> = cacheOnlyDataSource
         .flatMapLatest { cacheOnly -> getPhotos(cacheOnly = cacheOnly) }
         .cachedIn(viewModelScope)
+
+    override val refreshAction: MutableStateFlow<Long?> = MutableStateFlow(null)
 
     private fun getPhotos(cacheOnly: Boolean): Flow<PagingData<PhotoEntity>> = when {
         cacheOnly -> photoRepository.getLocalCachePhotos()
@@ -52,6 +57,10 @@ class PhotoListViewModelImpl @Inject constructor(
         navigate(navDirectionsEvent = navDirectionsEvent)
     }
 
+    override fun onRefresh() {
+        refreshAction.value = System.currentTimeMillis()
+    }
+
 }
 
 class PhotoListViewModelComposable : PhotoListViewModel {
@@ -62,8 +71,12 @@ class PhotoListViewModelComposable : PhotoListViewModel {
 
     override val photos: Flow<PagingData<PhotoEntity>> = flowOf()
 
+    override val refreshAction: StateFlow<Long?> = MutableStateFlow(null)
+
     override fun changeToCacheOnlyDataSource() {}
 
     override fun onClickCreatePhoto() {}
+
+    override fun onRefresh() {}
 
 }

@@ -7,8 +7,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.TextUnit
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
+import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -35,6 +38,7 @@ interface PhotoCreateViewModel : NavDirectionsViewModel {
     val image: StateFlow<Uri?>
     val imageLastSelected: StateFlow<Boolean>
     val contentSize: StateFlow<Int?>
+    val photoCreatedAction: SharedFlow<Unit>
 
     fun onTextInputChanged(text: String)
     fun onTextOffsetChanged(offset: Offset)
@@ -106,6 +110,12 @@ class PhotoCreateViewModelImpl @Inject constructor(
 
     override val contentSize: MutableStateFlow<Int?> = MutableStateFlow(null)
 
+    override val photoCreatedAction: MutableSharedFlow<Unit> = MutableSharedFlow(
+        replay = 0,
+        extraBufferCapacity = 1,
+        onBufferOverflow = BufferOverflow.DROP_OLDEST
+    )
+
     override fun onTextInputChanged(text: String) {
         photoCreateSettingsItem.value = photoCreateSettingsItem.value.copy(
             textSettings = photoCreateSettingsItem.value.textSettings.copy(
@@ -170,7 +180,7 @@ class PhotoCreateViewModelImpl @Inject constructor(
                 val base64 = BitmapUtils.bitmapToBase64(bitmap = bitmap)
                 photoRepository.savePhotoFile(base64 = base64)
             },
-            onSuccess = {}, // TODO: navigate back to list screen
+            onSuccess = { photoCreatedAction.tryEmit(Unit) },
             onFailure = { throwable -> showError(errorEvent = ErrorEvent.StringMessage(message = throwable.localizedMessage ?: "")) },
             onStart = {}, // TODO: show progress
             onComplete = {} // TODO: hide progress
@@ -190,6 +200,7 @@ class PhotoCreateViewModelComposable : PhotoCreateViewModel {
     override val image: StateFlow<Uri?> = MutableStateFlow(null)
     override val imageLastSelected: StateFlow<Boolean> = MutableStateFlow(false)
     override val contentSize: StateFlow<Int?> = MutableStateFlow(null)
+    override val photoCreatedAction: SharedFlow<Unit> = MutableSharedFlow()
 
     override fun onTextInputChanged(text: String) {}
     override fun onTextOffsetChanged(offset: Offset) {}

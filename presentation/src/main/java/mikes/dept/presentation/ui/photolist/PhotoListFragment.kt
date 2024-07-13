@@ -22,7 +22,10 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.fragment.app.clearFragmentResultListener
+import androidx.fragment.app.setFragmentResultListener
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.LoadState
 import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
@@ -43,10 +46,14 @@ import mikes.dept.presentation.utils.BitmapUtils
 // - while scrolling then 2 seconds finished and the list updates and scrolls to the very top
 // - it shows first 10 items without loading next page - unexpected behavior, should be loaded the next page
 // - recheck if another unexpected behavior could happen for such a scenario
+// TODO: think about refresh - is there some indicator needed for initial request
+// TODO: some kind of issue with refresh - it is refreshed but for some reason the first n file photos were missed
 class PhotoListFragment : NavDirectionsComposeFragment<PhotoListViewModel>() {
 
-    private companion object {
+    companion object {
         private const val GRID_CELL_COUNT = 2
+
+        const val RESULT_LISTENER_KEY = "RESULT_LISTENER_KEY"
     }
 
     override fun initDagger(subcomponentProvider: SubcomponentProvider) = subcomponentProvider
@@ -59,6 +66,18 @@ class PhotoListFragment : NavDirectionsComposeFragment<PhotoListViewModel>() {
     @Composable
     override fun ComposeContent() {
         ComposeContentView(viewModel = viewModel)
+    }
+
+    override fun setup() {
+        super.setup()
+        setFragmentResultListener(RESULT_LISTENER_KEY) { _, _ ->
+            viewModel.onRefresh()
+        }
+    }
+
+    override fun reset() {
+        super.reset()
+        clearFragmentResultListener(RESULT_LISTENER_KEY)
     }
 
     @Composable
@@ -90,6 +109,12 @@ class PhotoListFragment : NavDirectionsComposeFragment<PhotoListViewModel>() {
                     text = stringResource(id = R.string.btn_create_photo),
                     modifier = Modifier.padding(8.dp)
                 )
+            }
+            val refreshAction = viewModel.refreshAction.collectAsStateWithLifecycle().value
+            LaunchedEffect(refreshAction) {
+                if (refreshAction != null) {
+                    photos.refresh()
+                }
             }
         }
     }

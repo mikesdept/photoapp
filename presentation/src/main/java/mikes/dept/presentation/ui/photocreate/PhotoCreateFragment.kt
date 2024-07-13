@@ -27,11 +27,15 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.os.bundleOf
+import androidx.fragment.app.setFragmentResult
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.fragment.findNavController
 import coil.compose.AsyncImage
 import dev.shreyaspatil.capturable.capturable
 import dev.shreyaspatil.capturable.controller.rememberCaptureController
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import mikes.dept.presentation.R
 import mikes.dept.presentation.di.core.SubcomponentProvider
@@ -40,6 +44,8 @@ import mikes.dept.presentation.ui.compose.ImageWithTextButton
 import mikes.dept.presentation.ui.compose.PhotoCreateText
 import mikes.dept.presentation.ui.compose.PhotoCreateTextInput
 import mikes.dept.presentation.ui.core.navdirections.NavDirectionsComposeFragment
+import mikes.dept.presentation.ui.photolist.PhotoListFragment
+import mikes.dept.presentation.utils.repeatOnLifecycleStarted
 
 class PhotoCreateFragment : NavDirectionsComposeFragment<PhotoCreateViewModel>() {
 
@@ -59,6 +65,16 @@ class PhotoCreateFragment : NavDirectionsComposeFragment<PhotoCreateViewModel>()
     @Composable
     override fun ComposeContent() {
         ComposeContentView(viewModel = viewModel)
+    }
+
+    override fun setup() {
+        super.setup()
+        repeatOnLifecycleStarted {
+            viewModel.photoCreatedAction.collectLatest {
+                setFragmentResult(requestKey = PhotoListFragment.RESULT_LISTENER_KEY, result = bundleOf())
+                findNavController().popBackStack()
+            }
+        }
     }
 
     // TODO: save to local storage
