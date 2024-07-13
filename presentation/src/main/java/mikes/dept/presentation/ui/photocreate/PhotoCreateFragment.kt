@@ -7,6 +7,7 @@ import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -67,37 +68,43 @@ class PhotoCreateFragment : NavDirectionsComposeFragment<PhotoCreateViewModel>()
     @Composable
     private fun ComposeContentView(viewModel: PhotoCreateViewModel) {
         Column(modifier = Modifier.fillMaxSize()) {
+            Spacer(modifier = Modifier.weight(1f))
             val captureController = rememberCaptureController()
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .aspectRatio(1f)
-                    .background(viewModel.backgroundColor.collectAsStateWithLifecycle().value)
-                    .weight(1f)
-                    .then(
-                        when {
-                            viewModel.contentSize.collectAsStateWithLifecycle().value != null -> Modifier
-                            else -> Modifier.onGloballyPositioned { layoutCoordinates ->
-                                viewModel.updateContentSize(size = layoutCoordinates.size.width)
-                            }
-                        }
-                    )
                     .capturable(captureController)
             ) {
-                if (viewModel.imageLastSelected.collectAsStateWithLifecycle().value) {
-                    AsyncImage(
-                        model = viewModel.image.collectAsStateWithLifecycle().value,
-                        contentDescription = null,
-                        contentScale = ContentScale.Crop,
-                        modifier = Modifier.fillMaxSize()
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(viewModel.backgroundColor.collectAsStateWithLifecycle().value)
+                        .then(
+                            when {
+                                viewModel.contentSize.collectAsStateWithLifecycle().value != null -> Modifier
+                                else -> Modifier.onGloballyPositioned { layoutCoordinates ->
+                                    viewModel.updateContentSize(size = layoutCoordinates.size.width)
+                                }
+                            }
+                        )
+                ) {
+                    if (viewModel.imageLastSelected.collectAsStateWithLifecycle().value) {
+                        AsyncImage(
+                            model = viewModel.image.collectAsStateWithLifecycle().value,
+                            contentDescription = null,
+                            contentScale = ContentScale.Crop,
+                            modifier = Modifier.fillMaxSize()
+                        )
+                    }
+                    PhotoCreateText(
+                        textSettings = viewModel.textSettings.collectAsStateWithLifecycle(),
+                        onTextOffsetChanged = { offset -> viewModel.onTextOffsetChanged(offset = offset) },
+                        onTextSizeChanged = { textUnit -> viewModel.onTextSizeChanged(textUnit = textUnit) }
                     )
                 }
-                PhotoCreateText(
-                    textSettings = viewModel.textSettings.collectAsStateWithLifecycle(),
-                    onTextOffsetChanged = { offset -> viewModel.onTextOffsetChanged(offset = offset) },
-                    onTextSizeChanged = { textUnit -> viewModel.onTextSizeChanged(textUnit = textUnit) }
-                )
             }
+            Spacer(modifier = Modifier.weight(1f))
             PhotoCreateTextInput(
                 value = viewModel.text.collectAsStateWithLifecycle(),
                 onValueChanged = { text -> viewModel.onTextInputChanged(text = text) },

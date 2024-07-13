@@ -5,6 +5,8 @@ import dagger.Binds
 import dagger.Module
 import mikes.dept.data.FilesRepositoryImpl
 import mikes.dept.data.PhotoRepositoryImpl
+import mikes.dept.data.datasource.PhotoFilesDataSource
+import mikes.dept.data.datasource.PhotoFilesDataSourceImpl
 import mikes.dept.data.datasource.PhotoNetworkDataSource
 import mikes.dept.data.datasource.PhotoNetworkMockDataSourceImpl
 import mikes.dept.domain.entities.PhotoEntity
@@ -22,5 +24,8 @@ interface BindModule {
 
     @Binds
     fun bindFilesRepository(filesRepositoryImpl: FilesRepositoryImpl): FilesRepository
+
+    @Binds
+    fun bindPhotoFilesDataSource(photoFilesDataSourceImpl: PhotoFilesDataSourceImpl): PhotoFilesDataSource
 
 }

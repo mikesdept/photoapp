@@ -5,22 +5,26 @@ import androidx.paging.LoadType
 import androidx.paging.PagingState
 import androidx.paging.RemoteMediator
 import androidx.room.withTransaction
+import mikes.dept.data.PhotoRepositoryImpl
 import mikes.dept.data.database.PhotoAppDatabase
 import mikes.dept.data.database.entities.PhotoDBEntity
 import mikes.dept.data.database.entities.PhotoRemoteKeysDBEntity
 import mikes.dept.data.mapper.toDb
-import mikes.dept.data.network.entities.response.PhotoResponse
+import mikes.dept.data.mapper.toDomain
+import mikes.dept.domain.entities.PhotoEntity
 import mikes.dept.domain.exceptions.FirstPageNetworkException
 
 @OptIn(ExperimentalPagingApi::class)
 class PhotoPagingRemoteMediatorDataSource(
     private val photoAppDatabase: PhotoAppDatabase,
-    private val networkDataSource: PhotoNetworkDataSource
+    private val networkDataSource: PhotoNetworkDataSource,
+    private val photoFilesDataSource: PhotoFilesDataSource
 ) : RemoteMediator<Int, PhotoDBEntity>() {
 
     private companion object {
         private const val DEFAULT_START_PAGE = 0
         private const val ONE_PAGE = 1
+        private const val MIN_REMOTE_PHOTOS_COUNT = 1
     }
 
     override suspend fun load(
@@ -35,7 +39,18 @@ class PhotoPagingRemoteMediatorDataSource(
         }
 
         val result = runCatching {
-            Result.Success(data = networkDataSource.getPhotos(page = currentPage))
+            val filePhotosAtCurrentPage = photoFilesDataSource.getPhotoFiles(page = currentPage)
+
+            val remainingRemotePhotosCount = PhotoRepositoryImpl.PAGE_SIZE - filePhotosAtCurrentPage.size
+            val remotePhotos = when {
+                remainingRemotePhotosCount >= MIN_REMOTE_PHOTOS_COUNT -> networkDataSource.getPhotos(page = currentPage)
+                    .take(remainingRemotePhotosCount)
+                    .map { photoResponse -> photoResponse.toDomain(page = currentPage) }
+                else -> listOf()
+            }
+
+            val photos = filePhotosAtCurrentPage + remotePhotos
+            Result.Success(data = photos)
         }.getOrElse { throwable ->
             when {
                 currentPage == DEFAULT_START_PAGE -> Result.Failure(throwable = FirstPageNetworkException())
@@ -58,7 +73,7 @@ class PhotoPagingRemoteMediatorDataSource(
                         PhotoRemoteKeysDBEntity(id = photoEntity.id, previousKey = previousKey, nextKey = nextKey)
                     }
                     photoAppDatabase.photoRemoteKeysDao().insertAll(keys)
-                    photoAppDatabase.photoDao().insertAll(result.data.toDb(page = currentPage))
+                    photoAppDatabase.photoDao().insertAll(result.data.toDb())
                 }
                 MediatorResult.Success(endOfPaginationReached = endOfPaginationReached)
             }
@@ -106,13 +121,13 @@ class PhotoPagingRemoteMediatorDataSource(
         return remoteKeyId?.let { id -> photoAppDatabase.photoRemoteKeysDao().getRemoteKeyById(id = id) }
     }
 
-    private fun List<PhotoResponse>.toDb(page: Int): List<PhotoDBEntity> = map { photoResponse ->
-        photoResponse.toDb(page = page)
+    private fun List<PhotoEntity>.toDb(): List<PhotoDBEntity> = map { photoEntity ->
+        photoEntity.toDb()
     }
 
     private sealed class Result {
 
-        data class Success(val data: List<PhotoResponse>): Result()
+        data class Success(val data: List<PhotoEntity>): Result()
 
         data class Failure(val throwable: Throwable): Result()
 

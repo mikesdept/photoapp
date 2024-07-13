@@ -16,9 +16,10 @@ object BitmapUtils {
         Base64.encodeToString(byteArray, Base64.DEFAULT)
     }
 
-    suspend fun base64ToBitmap(base64: String): Bitmap = withContext(Dispatchers.IO) {
+    // TODO: should be suspended
+    fun base64ToBitmap(base64: String): Bitmap {
         val byteArray = Base64.decode(base64, Base64.DEFAULT)
-        BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size)
+        return BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size)
     }
 
 }

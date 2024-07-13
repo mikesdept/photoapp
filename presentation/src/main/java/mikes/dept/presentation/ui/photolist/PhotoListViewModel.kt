@@ -38,7 +38,7 @@ class PhotoListViewModelImpl @Inject constructor(
 
     private fun getPhotos(cacheOnly: Boolean): Flow<PagingData<PhotoEntity>> = when {
         cacheOnly -> photoRepository.getLocalCachePhotos()
-        else -> photoRepository.getRemotePhotos()
+        else -> photoRepository.getFilesAndRemotePhotos()
     }
 
     override fun changeToCacheOnlyDataSource() {

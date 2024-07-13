@@ -31,7 +31,10 @@ abstract class PhotoPagingSingleDataSource : PagingSource<Int, PhotoEntity>() {
                     DEFAULT_START_PAGE -> null
                     else -> max(DEFAULT_START_PAGE, currentPage - ONE_PAGE)
                 },
-                nextKey = currentPage + ONE_PAGE
+                nextKey = when {
+                    result.data.isEmpty() -> null
+                    else -> currentPage + ONE_PAGE
+                }
             )
         }
     }

@@ -1,5 +1,6 @@
 package mikes.dept.presentation.ui.photolist
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -16,6 +17,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -34,6 +36,7 @@ import mikes.dept.presentation.R
 import mikes.dept.presentation.di.core.SubcomponentProvider
 import mikes.dept.presentation.ui.core.navdirections.NavDirectionsComposeFragment
 import mikes.dept.presentation.ui.core.navdirections.event.ErrorEvent
+import mikes.dept.presentation.utils.BitmapUtils
 
 class PhotoListFragment : NavDirectionsComposeFragment<PhotoListViewModel>() {
 
@@ -92,15 +95,24 @@ class PhotoListFragment : NavDirectionsComposeFragment<PhotoListViewModel>() {
         photoEntity: PhotoEntity,
         modifier: Modifier = Modifier
     ) {
-        val smallUrl = (photoEntity.photoContentEntity as? PhotoContentEntity.Url)?.smallUrl ?: ""
-        AsyncImage(
-            model = smallUrl,
-            contentDescription = null,
-            contentScale = ContentScale.Crop,
-            modifier = modifier
-                .aspectRatio(getPhotoAspectRatioById(id = index + 1))
-                .clickable {}
-        )
+        when (val photoContentEntity = photoEntity.photoContentEntity) {
+            is PhotoContentEntity.Url -> AsyncImage(
+                model = photoContentEntity.smallUrl,
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                modifier = modifier
+                    .aspectRatio(getPhotoAspectRatioById(id = index + 1))
+                    .clickable {}
+            )
+            is PhotoContentEntity.Base64 -> Image(
+                bitmap = BitmapUtils.base64ToBitmap(base64 = photoContentEntity.base64).asImageBitmap(),
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                modifier = modifier
+                    .aspectRatio(getPhotoAspectRatioById(id = index + 1))
+                    .clickable {}
+            )
+        }
     }
 
     private fun getPhotoAspectRatioById(id: Int): Float = when {

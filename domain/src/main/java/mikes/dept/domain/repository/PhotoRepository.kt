@@ -6,9 +6,7 @@ interface PhotoRepository<T> {
 
     fun getLocalCachePhotos(): Flow<T>
 
-    fun getRemotePhotos(): Flow<T>
-
-    fun getPhotoFiles(): Flow<T>
+    fun getFilesAndRemotePhotos(): Flow<T>
 
     suspend fun savePhotoFile(base64: String)
 
