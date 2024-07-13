@@ -95,7 +95,7 @@ class PhotoCreateViewModelImpl @Inject constructor(
     override val image: StateFlow<Uri?> = photoCreateSettingsItem
         .map { settings -> settings.image }
         .distinctUntilChanged()
-        .onEach { imageLastSelected.value = true }
+        .onEach { uri -> imageLastSelected.value = uri != null }
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(),
@@ -139,7 +139,8 @@ class PhotoCreateViewModelImpl @Inject constructor(
         photoCreateSettingsItem.value = photoCreateSettingsItem.value.copy(
             backgroundColor = PhotoColorUtils.getNextColor(
                 currentColor = photoCreateSettingsItem.value.backgroundColor
-            )
+            ),
+            image = null
         )
     }
 
