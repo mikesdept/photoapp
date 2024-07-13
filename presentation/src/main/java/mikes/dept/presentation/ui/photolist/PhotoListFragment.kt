@@ -38,6 +38,11 @@ import mikes.dept.presentation.ui.core.navdirections.NavDirectionsComposeFragmen
 import mikes.dept.presentation.ui.core.navdirections.event.ErrorEvent
 import mikes.dept.presentation.utils.BitmapUtils
 
+// TODO: open the app after the first time and quickly scroll down - there is some kind of unexpected behavior
+// - the app takes 2 seconds in order to get mock data
+// - while scrolling then 2 seconds finished and the list updates and scrolls to the very top
+// - it shows first 10 items without loading next page - unexpected behavior, should be loaded the next page
+// - recheck if another unexpected behavior could happen for such a scenario
 class PhotoListFragment : NavDirectionsComposeFragment<PhotoListViewModel>() {
 
     private companion object {
