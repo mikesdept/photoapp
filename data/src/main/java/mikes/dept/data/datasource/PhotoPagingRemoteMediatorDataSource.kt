@@ -24,7 +24,6 @@ class PhotoPagingRemoteMediatorDataSource(
     private companion object {
         private const val DEFAULT_START_PAGE = 0
         private const val ONE_PAGE = 1
-        private const val MIN_REMOTE_PHOTOS_COUNT = 1
     }
 
     override suspend fun load(
@@ -42,12 +41,9 @@ class PhotoPagingRemoteMediatorDataSource(
             val filePhotosAtCurrentPage = photoFilesDataSource.getPhotoFiles(page = currentPage)
 
             val remainingRemotePhotosCount = PhotoRepositoryImpl.PAGE_SIZE - filePhotosAtCurrentPage.size
-            val remotePhotos = when {
-                remainingRemotePhotosCount >= MIN_REMOTE_PHOTOS_COUNT -> networkDataSource.getPhotos(page = currentPage)
-                    .take(remainingRemotePhotosCount)
-                    .map { photoResponse -> photoResponse.toDomain(page = currentPage) }
-                else -> listOf()
-            }
+            val remotePhotos = networkDataSource.getPhotos(page = currentPage)
+                .take(remainingRemotePhotosCount)
+                .map { photoResponse -> photoResponse.toDomain(page = currentPage) }
 
             val photos = filePhotosAtCurrentPage + remotePhotos
             Result.Success(data = photos)
