@@ -135,7 +135,10 @@ class PhotoListFragment : NavDirectionsComposeFragment<PhotoListViewModel>() {
                     .clickable {}
             )
             is PhotoContentEntity.Base64 -> Image(
-                bitmap = BitmapUtils.base64ToBitmap(base64 = photoContentEntity.base64).asImageBitmap(),
+                bitmap = BitmapUtils.base64ToBitmap(
+                    base64 = photoContentEntity.base64,
+                    inBitmapReuse = false
+                ).asImageBitmap(),
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
                 modifier = modifier

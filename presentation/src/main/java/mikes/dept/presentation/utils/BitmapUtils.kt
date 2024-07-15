@@ -9,6 +9,8 @@ import java.io.ByteArrayOutputStream
 
 object BitmapUtils {
 
+    private var cachedBitmap: Bitmap? = null
+
     suspend fun bitmapToBase64(bitmap: Bitmap): String = withContext(Dispatchers.IO) {
         val byteArrayOutputStream = ByteArrayOutputStream()
         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream)
@@ -17,9 +19,22 @@ object BitmapUtils {
     }
 
     // TODO: should be suspended
-    fun base64ToBitmap(base64: String): Bitmap {
+    fun base64ToBitmap(base64: String, inBitmapReuse: Boolean): Bitmap {
         val byteArray = Base64.decode(base64, Base64.DEFAULT)
-        return BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size)
+        val bitmap = when {
+            inBitmapReuse -> {
+                val bitmapOptions = BitmapFactory.Options().apply {
+                    when (cachedBitmap) {
+                        null -> inMutable = true
+                        else -> inBitmap = cachedBitmap
+                    }
+                }
+                BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size, bitmapOptions)
+                    .also { bitmap -> cachedBitmap = bitmap }
+            }
+            else -> BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size)
+        }
+        return bitmap
     }
 
 }
